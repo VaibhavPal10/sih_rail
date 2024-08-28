@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+
 // import {bookingicon_1} from 'public/bookingicon_1.png'
 // import {bookingicon_2} from 'public/bookingicon_2.png'
 // import {bookingicon_4} from 'public/bookingicon_4.png'
@@ -9,10 +11,10 @@ const RailMadadApp = () => {
   const [submissionType, setSubmissionType] = useState('video');
   const [file, setFile] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted with type:', submissionType);
-  };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log('Form submitted with type:', submissionType);
+  // };
 
   function handleChange(event) {
     setFile(event.target.files[0]);
@@ -32,6 +34,40 @@ const RailMadadApp = () => {
   //   'Ticket Booking', 'Train Enquiry', 'Reservation Enquiry', 'Retiring Room Booking',
   //   'Indian Railways', 'UTS Ticketing', 'Freight Business', 'Railway Parcel Website'
   // ];
+
+  // const [submissionType, setSubmissionType] = useState('video');
+  // const [file, setFile] = useState(null);
+  const [transcriptText, setTranscriptText] = useState('');
+
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
+
+  useEffect(() => {
+    setTranscriptText(transcript);
+  }, [transcript]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted with type:', submissionType);
+    if (submissionType === 'audio') {
+      console.log('Transcript:', transcriptText);
+    }
+  };
+
+  function handleChange(event) {
+    setFile(event.target.files[0]);
+  }
+
+  const startListening = () => SpeechRecognition.startListening({ continuous: true });
+
+  const stopListening = () => {
+    SpeechRecognition.stopListening();
+    setTranscriptText(transcript);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -90,15 +126,32 @@ const RailMadadApp = () => {
                 </div>
               )}
 
-              {submissionType === 'audio' && (
+{submissionType === 'audio' && (
                 <div className="mb-4">
-                  <div className="border-2 border-dashed border-gray-300 p-4 text-center">
-                    <p>Drag and drop your audio file or</p>
-                    <input type="file" onChange={handleChange} className="mt-2"/>
-                  </div>
-                  <button className="w-full mt-2 px-4 py-2 bg-custom-maroon text-white rounded">
-                    UPLOAD AUDIO FILE
-                  </button>
+                  {browserSupportsSpeechRecognition ? (
+                    <div>
+                      <p>Microphone: {listening ? 'on' : 'off'}</p>
+                      <button
+                        type="button"
+                        onClick={listening ? stopListening : startListening}
+                        className="px-4 py-2 bg-custom-purple text-white rounded mr-2"
+                      >
+                        {listening ? 'Stop' : 'Start'} Recording
+                      </button>
+                      <button
+                        type="button"
+                        onClick={resetTranscript}
+                        className="px-4 py-2 bg-gray-500 text-white rounded"
+                      >
+                        Reset
+                      </button>
+                      <div className="mt-4 p-2 bg-white rounded">
+                        <p>{transcriptText}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p>Browser doesn't support speech recognition.</p>
+                  )}
                 </div>
               )}
 
