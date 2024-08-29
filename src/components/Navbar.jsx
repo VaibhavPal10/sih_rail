@@ -2,8 +2,9 @@ import React from 'react'
 
 const Navbar = () => {
   return (
-        <header className="bg-white p-4 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
+    
+      <header className="bg-white p-6 flex justify-between items-center">
+        <div className="ml-10 flex items-center space-x-2">
           <img src="/logo.png" alt="Emblem" className="h-12" />
           <h1 className="text-4xl font-bold text-custom-maroon">RailMadad</h1>
         </div>
@@ -19,6 +20,7 @@ const Navbar = () => {
           </button>
         </div>
       </header>
+    
   )
 }
 
