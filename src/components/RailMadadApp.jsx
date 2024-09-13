@@ -25,31 +25,32 @@ const RailMadadApp = () => {
   useEffect(() => {
     setTranscriptText(transcript);
   }, [transcript]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setNotification('');
-
+  
     if (submissionType === 'audio') {
       console.log('Transcript:', transcriptText);
     } else if (submissionType === 'image') {
       if (file) {
         const formData = new FormData();
         formData.append(submissionType, file);
-
+  
         try {
           const response = await fetch('http://127.0.0.1:8000/complaints/image/', {
             method: 'POST',
             body: formData,
           });
-
+  
           const result = await response.json();
           if (response.ok) {
-            toast.success('File uploaded successfully!');
+            // Use the employee name from the response and show a success toast
+            const employeeName = result.employee_name || "Unknown Employee";
+            toast.success(`Employee ${employeeName} has been assigned.`);
           } else if (result.error && result.error === 'Complaint already registered') {
             toast.error('Complaint has already been registered.');
           } else {
-            toast.error('Upload failed. Please check the image.');
+            toast.error('Please check the image. Not relevant image');
           }
         } catch (error) {
           toast.error('An error occurred. Please try again.');
@@ -59,6 +60,7 @@ const RailMadadApp = () => {
       }
     }
   };
+  
 
   const handleChange = (event) => {
     setFile(event.target.files[0]);
